@@ -122,12 +122,11 @@ RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
 
 COPY sshd_config /etc/ssh/
-COPY entrypoint.sh ./
 
 # Start and enable SSH
 RUN apk add openssh \
     && echo "root:Docker!" | chpasswd \
-    && chmod +x ./entrypoint.sh \
+    && chmod +x containers/docker/entrypoint.sh \
     && cd /etc/ssh/ \
     && ssh-keygen -A
 
