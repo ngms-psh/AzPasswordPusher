@@ -5,7 +5,7 @@ export RAILS_ENV=production
 
 #!/bin/sh
 set -e
-service ssh start
+/usr/sbin/sshd
 exec gunicorn -w 4 -b 0.0.0.0:8000 app:app
 
 echo ""
