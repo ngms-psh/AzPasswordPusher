@@ -70,6 +70,15 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN bundle exec rails assets:precompile
 RUN bundle exec rake db:setup && rm -rf tmp/cache tmp/pids tmp/sockets
 
+COPY sshd_config /etc/ssh/
+
+# Start and enable SSH
+RUN apk add openssh \
+    && echo "root:Docker!" | chpasswd \
+    && chmod +x containers/docker/entrypoint.sh \
+    && cd /etc/ssh/ \
+    && ssh-keygen -A
+
 ################## Build done ##################
 
 FROM ruby:3.4-alpine
@@ -120,15 +129,6 @@ COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
 
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
-
-COPY sshd_config /etc/ssh/
-
-# Start and enable SSH
-RUN apk add openssh \
-    && echo "root:Docker!" | chpasswd \
-    && chmod +x containers/docker/entrypoint.sh \
-    && cd /etc/ssh/ \
-    && ssh-keygen -A
 
 USER pwpusher
 EXPOSE 5100 2222
