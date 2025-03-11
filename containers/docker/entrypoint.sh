@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+#!/bin/sh
+echo "Starting SSH ..."
+/usr/sbin/sshd
+
 export RAILS_ENV=production
 
 echo ""
@@ -24,11 +28,6 @@ fi
 
 echo "Password Pusher: starting puma webserver..."
 bundle exec puma -C config/puma.rb
-
-#!/bin/sh
-echo "Starting SSH ..."
-set -e
-/usr/sbin/sshd
 
 exec "$@"
 
