@@ -69,7 +69,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/pwpush
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-pwpush
           tags: |
             type=ref,event=pr,format=pr-{{ref}}-docker
             type=match,pattern=stable
@@ -141,7 +141,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/pwpush-public-gateway
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-public-gateway
           tags: |
             type=ref,event=pr,format=pr-{{ref}}-docker
             type=match,pattern=stable
@@ -213,7 +213,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/pwpush-worker
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-worker
           tags: |
             type=ref,event=pr,format=pr-{{ref}}-docker
             type=match,pattern=stable
