@@ -121,6 +121,14 @@ COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
 
+# Start and enable SSH
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends dialog \
+    && apt-get install -y --no-install-recommends openssh-server \
+    && echo "root:Docker!" | chpasswd \
+    && chmod u+x containers/docker/entrypoint.sh
+COPY sshd_config /etc/ssh/
+
 USER pwpusher
-EXPOSE 5100
+EXPOSE 5100 8000 2222
 ENTRYPOINT ["containers/docker/entrypoint.sh"]
