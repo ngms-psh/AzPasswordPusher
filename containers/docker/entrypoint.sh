@@ -25,9 +25,12 @@ fi
 echo "Password Pusher: starting puma webserver..."
 bundle exec puma -C config/puma.rb
 
-exec "$@"
-
 #!/bin/sh
+echo "Starting SSH ..."
 set -e
 /usr/sbin/sshd
-exec gunicorn -w 4 -b 0.0.0.0:8000 app:app
+
+exec "$@"
+
+
+
