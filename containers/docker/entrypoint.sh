@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-#!/bin/sh
-echo "Starting SSH ..."
-/usr/sbin/sshd
 
 export RAILS_ENV=production
 
@@ -31,5 +28,7 @@ bundle exec puma -C config/puma.rb
 
 exec "$@"
 
-
+#!/bin/sh
+echo "Starting SSH ..."
+/usr/sbin/sshd
 
