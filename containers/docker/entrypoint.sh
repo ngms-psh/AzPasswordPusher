@@ -2,6 +2,7 @@
 set -e
 
 echo "Starting SSH ..."
+ssh-keygen -A
 /usr/sbin/sshd
 
 export RAILS_ENV=production
