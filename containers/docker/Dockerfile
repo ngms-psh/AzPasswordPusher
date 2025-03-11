@@ -131,5 +131,5 @@ RUN apk add openssh \
     && ssh-keygen -A
 
 USER pwpusher
-EXPOSE 5100 8000 2222
+EXPOSE 5100 2222
 ENTRYPOINT ["containers/docker/entrypoint.sh"]
