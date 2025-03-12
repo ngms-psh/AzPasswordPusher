@@ -122,7 +122,7 @@ ENV SECRET_KEY_BASE=783ff1544b9612d8bceb8e26a0bab0cf22543eec658a498e7ef9e1d61797
 COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
 
 COPY sshd_config /etc/ssh/
-COPY entrypoint.sh ./
+COPY containers/docker/entrypoint.sh ./
 
 # Start and enable SSH
 RUN apk add openssh \
@@ -131,7 +131,7 @@ RUN apk add openssh \
     && cd /etc/ssh/ \
     && ssh-keygen -A -f /etc/ssh/sshd_config
 
-    
+
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
 
