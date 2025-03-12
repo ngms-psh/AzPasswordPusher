@@ -31,8 +31,6 @@ ENV APP_ROOT=/opt/PasswordPusher
 
 WORKDIR ${APP_ROOT}
 COPY Gemfile Gemfile.lock package.json yarn.lock ./
-COPY sshd_config /etc/ssh/
-COPY entrypoint.sh ./
 
 ENV RACK_ENV=production RAILS_ENV=production
 
@@ -72,12 +70,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN bundle exec rails assets:precompile
 RUN bundle exec rake db:setup && rm -rf tmp/cache tmp/pids tmp/sockets
 
-# Start and enable SSH
-RUN apk add openssh \
-    && echo "root:Docker!" | chpasswd \
-    && chmod +x ./entrypoint.sh \
-    && cd /etc/ssh/ \
-    && ssh-keygen -A
+
 
 ################## Build done ##################
 
@@ -100,6 +93,16 @@ RUN apk add --no-cache \
     tzdata \
     yarn \
     jemalloc
+
+COPY sshd_config /etc/ssh/
+COPY entrypoint.sh ./
+
+# Start and enable SSH
+RUN apk add openssh \
+    && echo "root:Docker!" | chpasswd \
+    && chmod +x ./entrypoint.sh \
+    && cd /etc/ssh/ \
+    && ssh-keygen -A -f /etc/ssh/sshd_config
 
 # Create a user and group to run the application
 ARG UID=1000
