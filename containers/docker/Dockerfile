@@ -70,19 +70,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN bundle exec rails assets:precompile
 RUN bundle exec rake db:setup && rm -rf tmp/cache tmp/pids tmp/sockets
 
-COPY sshd_config /etc/ssh/
-COPY containers/docker/ssh_entrypoint.sh ./
-
-# Start and enable SSH
-RUN apk add openssh \
-    && echo "root:Docker!" | chpasswd \
-    && chmod +x ./ssh_entrypoint.sh \
-    && cd /etc/ssh/ \
-    && ssh-keygen -A
-
-ENTRYPOINT ["./ssh_entrypoint.sh"]
-EXPOSE 2222
-
 ################## Build done ##################
 
 FROM ruby:3.4-alpine
@@ -116,6 +103,16 @@ WORKDIR ${APP_ROOT}
 ENV RACK_ENV=production RAILS_ENV=production
 ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 
+COPY containers/docker/ssh_entrypoint.sh ./
+
+COPY sshd_config /etc/ssh/
+# Start and enable SSH
+RUN apk add openssh \
+    && echo "root:Docker!" | chpasswd \
+    && chmod +x ./ssh_entrypoint.sh \
+    && cd /etc/ssh/ \
+    && ssh-keygen -A
+
 RUN addgroup -g "${GID}" pwpusher \
   && adduser -D -u "${UID}" -G pwpusher pwpusher \
   && chown -R pwpusher:pwpusher ${APP_ROOT}
@@ -131,7 +128,7 @@ RUN addgroup -g "${GID}" pwpusher \
 ENV SECRET_KEY_BASE=783ff1544b9612d8bceb8e26a0bab0cf22543eec658a498e7ef9e1d617976f960092005c8a54cb588759dc6dd8fd054bc4eca4a94dd7b96c6efda4a14a01bfbd
 
 COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
-COPY sshd_config /etc/ssh/
+
 
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
