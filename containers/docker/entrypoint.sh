@@ -1,11 +1,10 @@
 #!/bin/bash
 set -e
 
+echo "Running entrypoint.sh..."
 echo "Running as user:"
 echo "$USER"
 
-echo "Starting SSH ..."
-/usr/sbin/sshd
 
 export RAILS_ENV=production
 
