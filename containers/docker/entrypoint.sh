@@ -5,9 +5,8 @@ echo "Running entrypoint.sh..."
 echo "Running as user:"
 echo "$USER"
 echo "Starting SSH ..."
-mkdir -p /var/run/sshd
-ssh-keygen -A -f /var/run/sshd
-/usr/sbin/sshd -f /etc/ssh/sshd_config -c /var/run/sshd
+sudo ssh-keygen -A 
+sudo /usr/sbin/sshd 
 
 export RAILS_ENV=production
 
