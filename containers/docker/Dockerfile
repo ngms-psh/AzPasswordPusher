@@ -107,7 +107,7 @@ COPY containers/docker/ssh_entrypoint.sh ./
 
 COPY sshd_config /etc/ssh/
 # Start and enable SSH
-RUN apk add openssh \
+RUN apk add --no-cache openssh \
     && echo "root:Docker!" | chpasswd \
     && chmod +x ./ssh_entrypoint.sh \
     && cd /etc/ssh/ \
