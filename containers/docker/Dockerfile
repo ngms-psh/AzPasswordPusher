@@ -94,15 +94,6 @@ RUN apk add --no-cache \
     yarn \
     jemalloc
 
-COPY sshd_config /etc/ssh/
-COPY entrypoint.sh ./
-
-# Start and enable SSH
-RUN apk add openssh \
-    && echo "root:Docker!" | chpasswd \
-    && chmod +x ./entrypoint.sh \
-    && cd /etc/ssh/ \
-    && ssh-keygen -A -f /etc/ssh/sshd_config
 
 # Create a user and group to run the application
 ARG UID=1000
@@ -130,6 +121,17 @@ ENV SECRET_KEY_BASE=783ff1544b9612d8bceb8e26a0bab0cf22543eec658a498e7ef9e1d61797
 
 COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
 
+COPY sshd_config /etc/ssh/
+COPY entrypoint.sh ./
+
+# Start and enable SSH
+RUN apk add openssh \
+    && echo "root:Docker!" | chpasswd \
+    && chmod +x ./entrypoint.sh \
+    && cd /etc/ssh/ \
+    && ssh-keygen -A -f /etc/ssh/sshd_config
+
+    
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
 
