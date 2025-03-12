@@ -6,3 +6,5 @@ echo "$USER"
 
 echo "Starting SSH ..."
 /usr/sbin/sshd
+
+exec "$@"
