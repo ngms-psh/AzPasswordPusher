@@ -24,12 +24,12 @@ RUN apk add --no-cache \
     yaml-dev \
     yarn \
     pkgconf \
-    openssl-dev
+    openssl-dev \
+    openssh
 
 COPY sshd_config /etc/ssh/
 # Start and enable SSH
-RUN apk add --no-cache openssh \
-    && echo "root:Docker!" | chpasswd \
+RUN echo "root:Docker!" | chpasswd \
     && chmod +x ./ssh_entrypoint.sh \
     && cd /etc/ssh/ \
     && ssh-keygen -A
