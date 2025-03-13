@@ -22,14 +22,14 @@ fi
 echo ""
 
 echo "Password Pusher: migrating database to latest..."
-gosu pwpusher bundle exec rake db:migrate
+su-exec pwpusher bundle exec rake db:migrate
 
 if [ -n "$PWP__THEME" ] || [ -n "$PWP_PRECOMPILE" ]; then
     echo "Password Pusher: precompiling assets for customizations..."
-    gosu pwpusher bundle exec rails assets:precompile
+    su-exec pwpusher bundle exec rails assets:precompile
 fi
 
 echo "Password Pusher: starting puma webserver..."
-exec gosu pwpusher bundle exec puma -C config/puma.rb
+exec su-exec pwpusher bundle exec puma -C config/puma.rb
 
 exec "$@"

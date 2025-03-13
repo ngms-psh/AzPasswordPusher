@@ -90,7 +90,8 @@ RUN apk add --no-cache \
     tzdata \
     yarn \
     jemalloc \
-    gosu
+    su-exec \
+    openssh
 
 # Create a user and group to run the application
 ARG UID=1000
@@ -106,8 +107,7 @@ COPY containers/docker/ssh_entrypoint.sh ./
 
 COPY sshd_config /etc/ssh/
 # Start and enable SSH
-RUN apk add --no-cache openssh \
-    && echo "root:Docker!" | chpasswd \
+RUN echo "root:Docker!" | chpasswd \
     && chmod +x ./ssh_entrypoint.sh \
     && cd /etc/ssh/ \
     && ssh-keygen -A
