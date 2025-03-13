@@ -6,7 +6,7 @@ echo "Running as user:"
 echo "$USER"
 echo "Starting SSH ..."
 #ssh-keygen -A 
-/usr/sbin/sshd 
+#/usr/sbin/sshd 
 
 export RAILS_ENV=production
 
