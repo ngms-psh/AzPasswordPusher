@@ -26,6 +26,15 @@ RUN apk add --no-cache \
     pkgconf \
     openssl-dev
 
+COPY sshd_config /etc/ssh/
+# Start and enable SSH
+RUN apk add --no-cache openssh \
+    && echo "root:Docker!" | chpasswd \
+    && chmod +x ./ssh_entrypoint.sh \
+    && cd /etc/ssh/ \
+    && ssh-keygen -A
+
+
 ENV APP_ROOT=/opt/PasswordPusher
 
 WORKDIR ${APP_ROOT}
@@ -89,9 +98,8 @@ RUN apk add --no-cache \
     nodejs \
     tzdata \
     yarn \
-    jemalloc \
-    su-exec \
-    openssh
+    jemalloc
+
 
 # Create a user and group to run the application
 ARG UID=1000
@@ -105,12 +113,13 @@ ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 
 COPY containers/docker/ssh_entrypoint.sh ./
 
-COPY sshd_config /etc/ssh/
-# Start and enable SSH
-RUN echo "root:Docker!" | chpasswd \
-    && chmod +x ./ssh_entrypoint.sh \
-    && cd /etc/ssh/ \
-    && ssh-keygen -A
+# COPY sshd_config /etc/ssh/
+# # Start and enable SSH
+# RUN apk add --no-cache openssh \
+#     && echo "root:Docker!" | chpasswd \
+#     && chmod +x ./ssh_entrypoint.sh \
+#     && cd /etc/ssh/ \
+#     && ssh-keygen -A
 
 RUN addgroup -g "${GID}" pwpusher \
   && adduser -D -u "${UID}" -G pwpusher pwpusher \
@@ -128,8 +137,10 @@ ENV SECRET_KEY_BASE=783ff1544b9612d8bceb8e26a0bab0cf22543eec658a498e7ef9e1d61797
 
 COPY --from=build-env --chown=pwpusher:pwpusher ${APP_ROOT} ${APP_ROOT}
 
+
 RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
 
+USER pwpusher
 EXPOSE 5100 2222
-ENTRYPOINT ["./ssh_entrypoint.sh"]
+ENTRYPOINT ["containers/docker/entrypoint.sh"]
