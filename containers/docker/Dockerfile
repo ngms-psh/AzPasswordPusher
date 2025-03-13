@@ -28,6 +28,7 @@ RUN apk add --no-cache \
     openssh
 
 COPY sshd_config /etc/ssh/
+COPY containers/docker/ssh_entrypoint.sh ./
 # Start and enable SSH
 RUN echo "root:Docker!" | chpasswd \
     && chmod +x ./ssh_entrypoint.sh \
@@ -113,13 +114,6 @@ ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 
 COPY containers/docker/ssh_entrypoint.sh ./
 
-# COPY sshd_config /etc/ssh/
-# # Start and enable SSH
-# RUN apk add --no-cache openssh \
-#     && echo "root:Docker!" | chpasswd \
-#     && chmod +x ./ssh_entrypoint.sh \
-#     && cd /etc/ssh/ \
-#     && ssh-keygen -A
 
 RUN addgroup -g "${GID}" pwpusher \
   && adduser -D -u "${UID}" -G pwpusher pwpusher \
