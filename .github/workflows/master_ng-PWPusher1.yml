@@ -113,4 +113,4 @@ jobs:
         app-name: 'ng-PWPusher1'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_1407d2bb10294d0f851979c3ba592cbc }}
-        images: 'ghcr.io/ngms-psh/azpasswordpusher-pwpush:${{ github.sha }}'
+        images: 'ghcr.io/ngms-psh/azpasswordpusher-pwpush:latest'
