@@ -24,16 +24,7 @@ RUN apk add --no-cache \
     yaml-dev \
     yarn \
     pkgconf \
-    openssl-dev \
-    openssh
-
-COPY sshd_config /etc/ssh/
-COPY containers/docker/ssh_entrypoint.sh ./
-# Start and enable SSH
-RUN echo "root:Docker!" | chpasswd \
-    && chmod +x ./ssh_entrypoint.sh \
-    && cd /etc/ssh/ \
-    && ssh-keygen -A
+    openssl-dev
 
 
 ENV APP_ROOT=/opt/PasswordPusher
@@ -112,8 +103,6 @@ WORKDIR ${APP_ROOT}
 ENV RACK_ENV=production RAILS_ENV=production
 ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
 
-COPY containers/docker/ssh_entrypoint.sh ./
-
 
 RUN addgroup -g "${GID}" pwpusher \
   && adduser -D -u "${UID}" -G pwpusher pwpusher \
@@ -136,5 +125,5 @@ RUN bundle config set without "${BUNDLE_WITHOUT}" \
     && bundle config set deployment "${BUNDLE_DEPLOYMENT}"
 
 USER pwpusher
-EXPOSE 5100 2222
+EXPOSE 5100
 ENTRYPOINT ["containers/docker/entrypoint.sh"]

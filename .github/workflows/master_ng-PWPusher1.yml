@@ -9,29 +9,79 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
+  # github.repository as <account>/<repo>
+  IMAGE_NAME: ${{ github.repository }}
+  DOCKER_PUSH: true
+
 jobs:
   build:
     runs-on: 'ubuntu-latest'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+
+    - name: Install cosign
+      if: github.event_name != 'pull_request'
+      uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
+      with:
+        cosign-release: 'v2.2.4'
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+      with:
+        image: tonistiigi/binfmt:qemu-v8.1.5
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Log in to registry
-      uses: docker/login-action@v2
+    - name: Populate Docker metadata
+      id: meta
+      uses: docker/metadata-action@v5
       with:
-        registry: https://ghcr.io//
-        username: ${{ secrets.AzureAppService_ContainerUsername_000d2873e4f84234a87a12ee9b6d662c }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_9922f497341a40b090991d8bd8a82a6b }}
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-pwpush
+        tags: |
+          type=ref,event=pr,format=pr-{{ref}}-docker
+          type=match,pattern=stable
+          type=schedule,pattern=nightly
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=raw,value=latest,enable=true
+          type=sha,value=latest,enable=true
 
-    - name: Build and push container image to registry
-      uses: docker/build-push-action@v3
+    - name: Log in to registry
+      uses: docker/login-action@v3
       with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      id: build-and-push
+      uses: docker/build-push-action@v6
+      with:
+        file: ./containers/docker/Dockerfile
+        platforms: linux/amd64
+        provenance: false
         push: true
-        tags: ghcr.io//${{ secrets.AzureAppService_ContainerUsername_000d2873e4f84234a87a12ee9b6d662c }}/ngms-psh/azpasswordpusher-pwpush:${{ github.sha }}
-        file: ./Dockerfile
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max}}
+
+    - name: Sign the published Docker image
+      if: ${{ github.event_name != 'pull_request' }}
+      env:
+        # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
+        TAGS: ${{ steps.meta.outputs.tags }}
+        DIGEST: ${{ steps.build-and-push.outputs.digest }}
+      # This step uses the identity token to provision an ephemeral certificate
+      # against the sigstore community Fulcio instance.
+      run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
 
   deploy:
     runs-on: ubuntu-latest
@@ -48,4 +98,4 @@ jobs:
         app-name: 'ng-PWPusher1'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_1407d2bb10294d0f851979c3ba592cbc }}
-        images: 'ghcr.io//${{ secrets.AzureAppService_ContainerUsername_000d2873e4f84234a87a12ee9b6d662c }}/ngms-psh/azpasswordpusher-pwpush:${{ github.sha }}'
+        images: 'ghcr.io/ngms-psh/azpasswordpusher-pwpush:${{ github.sha }}'
