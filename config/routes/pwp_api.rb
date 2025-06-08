@@ -5,16 +5,21 @@ constraints(format: :json) do
     end
   end
 
-  resources :p, controller: "api/v1/passwords", as: :passwords, except: %i[new index edit update] do
+  resources :p, controller: "api/v1/pushes", as: :passwords, except: %i[new index edit update] do
     get "preview", on: :member
     get "audit", on: :member
     get "active", on: :collection
     get "expired", on: :collection
   end
 
+  resources :p, controller: "api/v1/pushes", as: :json_pushes, except: %i[new index edit update] do
+    get "preview", on: :member
+    get "audit", on: :member
+  end
+
   # File pushes only enabled when logins are enabled.
   if Settings.enable_logins && Settings.enable_file_pushes
-    resources :f, controller: "api/v1/file_pushes", as: :file_pushes, except: %i[new index edit update] do
+    resources :f, controller: "api/v1/pushes", as: :file_pushes, except: %i[new index edit update] do
       get "preview", on: :member
       get "audit", on: :member
       get "active", on: :collection
@@ -24,7 +29,7 @@ constraints(format: :json) do
 
   # URL based pushes can only enabled when logins are enabled.
   if Settings.enable_logins && Settings.enable_url_pushes
-    resources :r, controller: "api/v1/urls", as: :urls, except: %i[new index edit update] do
+    resources :r, controller: "api/v1/pushes", as: :urls, except: %i[new index edit update] do
       get "preview", on: :member
       get "audit", on: :member
       get "active", on: :collection

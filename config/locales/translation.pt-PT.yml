@@ -163,6 +163,8 @@ pt-PT:
         unconfirmed_email: Email não confirmado
         unlock_token: Código de desbloqueio
         updated_at: Atualizado em
+      push:
+        name: Nome
     models:
       user:
         one: Utilizador
@@ -772,6 +774,7 @@ pt-PT:
       log_close: Fechado em %{date} por %{user}. Resposta excluída.
       log_response: Resposta do destinatário recebida em %{date} por %{user}
       log_retrieve: Recuperar página visualizada em %{date} por %{user}
+      none: Nenhum
   dashboard:
     show:
       detail: Detalhe
@@ -947,6 +950,8 @@ pt-PT:
       policy_tip: 'Dica: Pode definir padrões e muito mais em seu %{link}.'
       short_expiration_tip: Tempos de expiração curtos e contagens de visualizações
         reduzem o risco de exposição.
+      name_or_id: Nome ou ID
+      kind: Tipo
     index:
       actions: Ações
       clear_filters: Limpar filtros
@@ -959,8 +964,8 @@ pt-PT:
       active: Ativo
       expired: Expirado
       all: Todos
-      remaining: Restante
       team_pushes: Envios de Grupo
+      views_days_remaining: "%{views} visualizações ou %{days} dias"
     'no': Não
     none: Nenhum
     passphrase:
@@ -1033,8 +1038,19 @@ pt-PT:
       title: Envie com segurança uma senha, texto ou arquivo
     create:
       premium_required: Precisa inscrever-se para anexar arquivos.
+      invalid_url: deve ser uma URL HTTP ou HTTPS válida.
+      payload_required: É necessária carga útil.
     update:
       successful: O push foi atualizado com sucesso.
+    file_pushes_disabled: Os envios de arquivos estão desabilitados.
+    need_login_for_active: Você precisa estar logado para visualizar seus pushes ativos.
+    need_login_for_expired: Você precisa estar logado para visualizar seus pushes
+      expirados.
+    not_deletable_or_not_owner: Esse envio não pode ser eliminado pelos visualizadores
+      e não pertence a si.
+    not_owner_push: Esse envio não pertence a si.
+    passphrase_incorrect: Este push tem uma senha incorreta ou não fornecida.
+    url_pushes_disabled: Os envios de URL estão desabilitados.
   static:
     about:
       about_1: Password Pusher é uma ferramenta usada para compartilhar senhas e outras
@@ -1587,3 +1603,5 @@ pt-PT:
     not_found: Não encontrado
     share: Compartilhar
     expired: Expirado
+    none: Nenhum
+    remaining: Restante

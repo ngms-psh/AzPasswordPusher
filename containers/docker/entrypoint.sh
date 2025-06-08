@@ -24,7 +24,14 @@ if [ -n "$PWP__THEME" ] || [ -n "$PWP_PRECOMPILE" ]; then
     bundle exec rails assets:precompile
 fi
 
-echo "Password Pusher: starting puma webserver..."
-bundle exec puma -C config/puma.rb
+# Set the default port if not specified
+if [ -z "$PORT" ]; then
+    export PORT=5100
+fi
 
-exec "$@"
+echo "Password Pusher: starting foreman..."
+if [ -n "$PWP__NO_WORKER" ] || [ -n "$PWP_PUBLIC_GATEWAY" ]; then
+    exec bundle exec foreman start -m web=1
+else
+    exec bundle exec foreman start -m web=1,worker=1
+fi

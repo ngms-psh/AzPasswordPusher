@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_08_192458) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_06_094103) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -27,7 +27,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_08_192458) do
     t.string "content_type"
     t.text "metadata"
     t.string "service_name", null: false
-    t.integer "byte_size", null: false
+    t.bigint "byte_size", null: false
     t.string "checksum"
     t.datetime "created_at", precision: nil, null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
@@ -39,43 +39,47 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_08_192458) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "file_pushes", force: :cascade do |t|
+  create_table "audit_logs", force: :cascade do |t|
+    t.string "ip"
+    t.string "user_agent"
+    t.string "referrer"
+    t.integer "kind", null: false
+    t.integer "user_id"
+    t.integer "push_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kind"], name: "index_audit_logs_on_kind"
+    t.index ["push_id"], name: "index_audit_logs_on_push_id"
+    t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
+
+  create_table "data_migration_statuses", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "completed", default: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_data_migration_statuses_on_name", unique: true
+  end
+
+  create_table "pushes", force: :cascade do |t|
+    t.integer "kind", null: false
     t.integer "expire_after_days"
     t.integer "expire_after_views"
     t.boolean "expired", default: false
     t.string "url_token"
-    t.integer "user_id"
-    t.boolean "deleted", default: false
     t.boolean "deletable_by_viewer", default: true
     t.boolean "retrieval_step", default: false
     t.datetime "expired_on"
     t.text "payload_ciphertext", limit: 16777215
-    t.text "text", limit: 16777215
     t.text "note_ciphertext"
+    t.text "passphrase_ciphertext", limit: 2048
+    t.string "name"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "passphrase_ciphertext", limit: 2048
-    t.index ["url_token"], name: "index_file_pushes_on_url_token", unique: true
-    t.index ["user_id"], name: "index_file_pushes_on_user_id"
-  end
-
-  create_table "passwords", force: :cascade do |t|
-    t.integer "expire_after_days"
-    t.integer "expire_after_views"
-    t.boolean "expired", default: false
-    t.string "url_token"
-    t.datetime "created_at", precision: nil
-    t.datetime "updated_at", precision: nil
-    t.integer "user_id"
-    t.boolean "deleted", default: false
-    t.boolean "deletable_by_viewer", default: true
-    t.boolean "retrieval_step", default: false
-    t.datetime "expired_on", precision: nil
-    t.text "payload_ciphertext", limit: 16777215
-    t.text "note_ciphertext"
-    t.text "passphrase_ciphertext", limit: 2048
-    t.index ["url_token"], name: "index_passwords_on_url_token", unique: true
-    t.index ["user_id"], name: "index_passwords_on_user_id"
+    t.index ["url_token"], name: "index_pushes_on_url_token", unique: true
+    t.index ["user_id"], name: "index_pushes_on_user_id"
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -199,25 +203,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_08_192458) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
-  create_table "urls", force: :cascade do |t|
-    t.integer "expire_after_days"
-    t.integer "expire_after_views"
-    t.boolean "expired", default: false
-    t.string "url_token"
-    t.integer "user_id"
-    t.boolean "deleted", default: false
-    t.boolean "retrieval_step", default: false
-    t.datetime "expired_on"
-    t.text "payload_ciphertext", limit: 2097152
-    t.text "text", limit: 2097152
-    t.text "note_ciphertext"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "passphrase_ciphertext", limit: 2048
-    t.index ["url_token"], name: "index_urls_on_url_token", unique: true
-    t.index ["user_id"], name: "index_urls_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -269,6 +254,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_08_192458) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "audit_logs", "pushes"
+  add_foreign_key "pushes", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

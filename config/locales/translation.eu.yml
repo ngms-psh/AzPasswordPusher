@@ -164,6 +164,8 @@ eu:
         unconfirmed_email: Berretsi gabeko mezu elektronikoa
         unlock_token: Desblokeatu tokena
         updated_at: Ordu honetan eguneratua
+      push:
+        name: Izena
     models:
       user:
         one: Erabiltzailea
@@ -773,6 +775,7 @@ eu:
       log_close: "%{date}-n itxi zuen %{user}. Erantzuna ezabatu da."
       log_response: Hartzailearen erantzuna %{date}-n jaso du %{user}-k
       log_retrieve: Berreskuratu %{date}-k %{user}-k ikusitako orria
+      none: Bat ere ez
   dashboard:
     show:
       detail: Xehetasuna
@@ -945,6 +948,8 @@ eu:
       policy_tip: 'Aholkua: lehenetsiak eta gehiago ezar ditzakezu zure %{link}.'
       short_expiration_tip: Iraungitze denbora laburrak eta ikustaldien kopuruak esposizio
         arriskua murrizten du.
+      name_or_id: Izena edo NANa
+      kind: Mota
     index:
       actions: Ekintzak
       clear_filters: Garbitu iragazkiak
@@ -957,8 +962,8 @@ eu:
       active: Aktibo daudenak
       expired: Iraungitakoak
       all: Denak
-      remaining: Gainerakoak
       team_pushes: Talde Bultzadak
+      views_days_remaining: "%{views} ikustaldi edo %{days} egun"
     'no': Ez
     none: Bat ere ez
     passphrase:
@@ -1033,8 +1038,18 @@ eu:
       title: Bidali pasahitza, testua edo fitxategia modu seguruan
     create:
       premium_required: Harpidetu egin behar duzu fitxategiak eransteko.
+      invalid_url: HTTP edo HTTPS URL balioduna izan behar du.
+      payload_required: Karga erabilgarria beharrezkoa da.
     update:
       successful: Push behar bezala eguneratu da.
+    file_pushes_disabled: Fitxategien bultzadak desgaituta daude.
+    need_login_for_active: Saioa hasi behar duzu zure push aktiboak ikusteko.
+    need_login_for_expired: Iraungitako push-ak ikusteko saioa hasi behar duzu.
+    not_deletable_or_not_owner: Bultzada hori ikusleek ez dute ezabatzen eta ez da
+      zurea.
+    not_owner_push: Bidalketa hori ez da zurea.
+    passphrase_incorrect: Push honek pasahitz okerra edo eman ez dena du.
+    url_pushes_disabled: URL bultzadak desgaituta daude.
   static:
     about:
       about_1: Password Pusher pasahitzak eta bestelako informazio sentikorra beste
@@ -1590,3 +1605,5 @@ eu:
     not_found: Ez da aurkitu
     share: Partekatu
     expired: Iraungitakoak
+    none: Bat ere ez
+    remaining: Gainerakoak
